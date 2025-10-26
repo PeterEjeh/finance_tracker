@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Complete Sign Up - Finance Tracker</title>
+    <style>
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          sans-serif;
+        margin: 0;
+        padding: 0;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+      }
+      .container {
+        max-width: 400px;
+        padding: 2rem;
+      }
+      .logo {
+        width: 80px;
+        height: 80px;
+        margin: 0 auto 2rem;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        font-weight: bold;
+      }
+      h1 {
+        margin: 0 0 1rem;
+        font-size: 1.8rem;
+      }
+      p {
+        margin: 0 0 2rem;
+        opacity: 0.9;
+        line-height: 1.5;
+      }
+      .button {
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        padding: 1rem 2rem;
+        border-radius: 50px;
+        text-decoration: none;
+        display: inline-block;
+        margin: 0.5rem;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        font-size: 1rem;
+      }
+      .button:hover {
+        background: rgba(255, 255, 255, 0.3);
+        border-color: rgba(255, 255, 255, 0.5);
+      }
+      .button.primary {
+        background: white;
+        color: #667eea;
+        font-weight: bold;
+      }
+      .button.primary:hover {
+        background: rgba(255, 255, 255, 0.9);
+      }
+      .loading {
+        display: none;
+        margin-top: 1rem;
+      }
+      .spinner {
+        border: 3px solid rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        border-top: 3px solid white;
+        width: 30px;
+        height: 30px;
+        animation: spin 1s linear infinite;
+        margin: 0 auto;
+      }
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="logo">FT</div>
+      <h1>Complete Your Sign Up</h1>
+      <p>
+        Click the button below to open the Finance Tracker app and complete your
+        account setup.
+      </p>
+
+      <button class="button primary" onclick="openApp()">
+        Open Finance Tracker App
+      </button>
+      <br />
+      <button class="button" onclick="retry()">Try Again</button>
+
+      <div class="loading" id="loading">
+        <div class="spinner"></div>
+        <p>Redirecting to app...</p>
+      </div>
+    </div>
+
+    <script>
+      // Get URL parameters
+      const urlParams = new URLSearchParams(window.location.search);
+      const email = urlParams.get("email");
+      const continueUrl = urlParams.get("continueUrl");
+      const actionCode = urlParams.get("oobCode");
+
+      function openApp() {
+        const loading = document.getElementById("loading");
+        loading.style.display = "block";
+
+        // Try to open the mobile app with custom URL scheme
+        // This will work if the app is installed on mobile devices
+        const appUrl = `financetracker://email-link?email=${encodeURIComponent(
+          email
+        )}&continueUrl=${encodeURIComponent(
+          continueUrl
+        )}&oobCode=${encodeURIComponent(actionCode)}`;
+
+        // For iOS
+        window.location.href = appUrl;
+
+        // For Android (fallback)
+        setTimeout(() => {
+          window.location.href = appUrl;
+        }, 100);
+
+        // Final fallback - try to open in app store or show manual instructions
+        setTimeout(() => {
+          if (document.hasFocus()) {
+            // User is still on this page, app didn't open
+            showFallbackInstructions();
+          }
+        }, 2000);
+      }
+
+      function showFallbackInstructions() {
+        const container = document.querySelector(".container");
+        container.innerHTML = `
+                <div class="logo">FT</div>
+                <h1>App Not Installed</h1>
+                <p>It looks like the Finance Tracker app isn't installed on this device, or the link couldn't be opened automatically.</p>
+                <p><strong>What to do:</strong></p>
+                <ol style="text-align: left; max-width: 300px; margin: 0 auto;">
+                    <li>Make sure the Finance Tracker app is installed</li>
+                    <li>Open the app manually</li>
+                    <li>Go to the email verification screen</li>
+                    <li>Tap "I've Verified My Email" to continue</li>
+                </ol>
+                <button class="button primary" onclick="window.close()">Close This Page</button>
+            `;
+      }
+
+      function retry() {
+        openApp();
+      }
+
+      // Auto-redirect if on mobile
+      if (
+        /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+          navigator.userAgent
+        )
+      ) {
+        setTimeout(() => {
+          if (document.hasFocus()) {
+            openApp();
+          }
+        }, 1000);
+      }
+    </script>
+  </body>
+</html>
