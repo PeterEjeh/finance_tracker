@@ -35,6 +35,3 @@ A full-featured personal finance tracker built with Flutter and Hive for secure,
 - `local_storage.dart` – Hive adapters and local storage management
 - `currency_service.dart` – API integration and currency rate caching
 
-## License
-
-[Add your license here]
